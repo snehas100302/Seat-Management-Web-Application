@@ -7,13 +7,18 @@ import {
     Users,
     UserPlus,
     CheckCircle2,
-    ChevronRight
+    ChevronRight,
+    LogOut
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar: React.FC = () => {
+    const { user, logout } = useAuth();
+
     const menuGroups = [
         {
             title: 'Admin',
+            roles: ['admin'],
             items: [
                 { name: 'Master Setup', path: '/master-setup', icon: Settings },
                 { name: 'Seat Matrix', path: '/seat-matrix', icon: Grid3X3 },
@@ -21,6 +26,7 @@ const Sidebar: React.FC = () => {
         },
         {
             title: 'Operations',
+            roles: ['officer'],
             items: [
                 { name: 'Applicants', path: '/applicants', icon: Users },
                 { name: 'Allocation', path: '/allocation', icon: UserPlus },
@@ -29,11 +35,14 @@ const Sidebar: React.FC = () => {
         },
         {
             title: 'Analysis',
+            roles: ['admin', 'officer', 'management'],
             items: [
                 { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
             ]
         }
     ];
+
+    const filteredGroups = menuGroups.filter(group => group.roles.includes(user?.role || ''));
 
     const sidebarStyle: React.CSSProperties = {
         width: 'var(--sidebar-width)',
@@ -90,7 +99,7 @@ const Sidebar: React.FC = () => {
             </div>
 
             <nav style={{ flex: 1, overflowY: 'auto' }}>
-                {menuGroups.map((group) => (
+                {filteredGroups.map((group) => (
                     <div key={group.title}>
                         <div style={groupTitleStyle}>{group.title}</div>
                         {group.items.map((item) => (
@@ -114,8 +123,22 @@ const Sidebar: React.FC = () => {
                 ))}
             </nav>
 
-            <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
-                v1.0.0
+            <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <button
+                    onClick={logout}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        width: '100%',
+                        padding: '0.75rem',
+                        borderRadius: 'var(--radius-sm)',
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '0.875rem'
+                    }}
+                >
+                    <LogOut size={18} /> Logout
+                </button>
             </div>
         </aside>
     );

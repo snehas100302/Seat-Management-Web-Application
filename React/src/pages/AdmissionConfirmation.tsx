@@ -1,107 +1,222 @@
-import { CheckCircle2, CreditCard, FileCheck, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, CreditCard, FileCheck, Clock, AlertTriangle, Shield } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 const AdmissionConfirmation: React.FC = () => {
-    const { applicants, programs, confirmAdmission } = useAppContext();
+    const { applicants, programs, quotas, markFeePaid, confirmAdmission } = useAppContext();
     const allocatedApplicants = applicants.filter(a => a.allocatedProgramId);
+    const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
+
+    const getProgramName = (id?: string) => programs.find(p => p.id === id)?.name || '—';
+    const getQuotaName = (id?: string) => quotas.find(q => q.id === id)?.name || '—';
+
+    const handleConfirm = (applicantId: string) => {
+        const res = confirmAdmission(applicantId);
+        setResult(res);
+        setTimeout(() => setResult(null), 4000);
+    };
+
+    const allDocsVerified = (applicantId: string) => {
+        const app = applicants.find(a => a.id === applicantId);
+        return app?.documents.every(d => d.status === 'Verified') ?? false;
+    };
 
     const cardStyle: React.CSSProperties = {
         backgroundColor: 'var(--bg-card)',
         borderRadius: 'var(--radius-lg)',
         boxShadow: 'var(--shadow-md)',
         border: '1px solid var(--border-color)',
-        marginTop: '1.5rem'
+        overflow: 'hidden',
     };
 
-    const getProgramName = (id?: string) => programs.find(p => p.id === id)?.name || 'Unknown';
+    const thStyle: React.CSSProperties = {
+        padding: '0.85rem 1.25rem',
+        textAlign: 'left',
+        fontSize: '0.72rem',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+        color: 'var(--text-muted)',
+        backgroundColor: '#f8f9fb',
+        borderBottom: '1px solid var(--border-color)',
+    };
+
+    const tdStyle: React.CSSProperties = {
+        padding: '1rem 1.25rem',
+        fontSize: '0.875rem',
+        borderBottom: '1px solid var(--border-color)',
+    };
+
+    // Summary counts
+    const feePending = allocatedApplicants.filter(a => a.feeStatus === 'Pending').length;
+    const feePaid = allocatedApplicants.filter(a => a.feeStatus === 'Paid').length;
+    const confirmed = allocatedApplicants.filter(a => a.admissionNumber).length;
 
     return (
         <div>
-            <div style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
                 <h1 style={{ fontSize: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <CheckCircle2 className="text-primary" /> Admission Confirmation & Fees
+                    <CheckCircle2 size={22} color="var(--primary)" /> Admission Confirmation & Fees
                 </h1>
-                <p style={{ color: 'var(--text-muted)' }}>Finalize admissions by confirming fee payment and generating admission numbers.</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    Confirm fee payments and generate admission numbers. Admission is confirmed only after fee is paid and documents are verified.
+                </p>
             </div>
 
-            <div style={cardStyle}>
-                <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Allocated Students</h3>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{allocatedApplicants.length} Pending Confirmation</span>
+            {/* Result Banner */}
+            {result && (
+                <div style={{
+                    display: 'flex', alignItems: 'center', gap: '0.6rem',
+                    padding: '0.85rem 1.25rem', marginBottom: '1.25rem',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: result.success ? '#ecfdf5' : '#fef2f2',
+                    border: `1px solid ${result.success ? '#a7f3d0' : '#fecaca'}`,
+                    color: result.success ? '#065f46' : '#991b1b',
+                    fontSize: '0.875rem', fontWeight: 500,
+                    animation: 'fadeInUp 0.3s ease-out',
+                }}>
+                    {result.success ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
+                    {result.message}
+                    <button onClick={() => setResult(null)} style={{ marginLeft: 'auto', padding: '2px', color: 'inherit', opacity: 0.6 }}>✕</button>
+                </div>
+            )}
+
+            {/* Summary */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+                {[
+                    { label: 'Fee Pending', value: feePending, color: '#d97706', bg: '#fffbeb' },
+                    { label: 'Fee Paid', value: feePaid, color: '#059669', bg: '#ecfdf5' },
+                    { label: 'Admissions Confirmed', value: confirmed, color: '#2563eb', bg: '#eff6ff' },
+                ].map(s => (
+                    <div key={s.label} style={{
+                        ...cardStyle, padding: '1.25rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    }} className="card-animate">
+                        <div>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>{s.label}</div>
+                            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: s.color, marginTop: '0.15rem' }}>{s.value}</div>
+                        </div>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {s.label === 'Fee Pending' ? <Clock size={20} color={s.color} /> : s.label === 'Fee Paid' ? <CreditCard size={20} color={s.color} /> : <Shield size={20} color={s.color} />}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Table */}
+            <div style={cardStyle} className="card-animate">
+                <div style={{
+                    padding: '1rem 1.25rem',
+                    borderBottom: '1px solid var(--border-color)',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 600 }}>Allocated Students</h3>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{allocatedApplicants.length} students</span>
                 </div>
 
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '1px solid var(--border-color)' }}>
-                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Student Name</th>
-                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Program</th>
-                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Fee Status</th>
-                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Admission #</th>
-                                <th style={{ padding: '1rem 1.5rem', textAlign: 'right', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Action</th>
+                            <tr>
+                                <th style={thStyle}>Student</th>
+                                <th style={thStyle}>Program</th>
+                                <th style={thStyle}>Quota</th>
+                                <th style={thStyle}>Documents</th>
+                                <th style={thStyle}>Fee Status</th>
+                                <th style={thStyle}>Admission #</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {allocatedApplicants.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                                        No students have been allocated seats yet.
-                                    </td>
-                                </tr>
+                                <tr><td colSpan={7} style={{ ...tdStyle, textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                                    No students have been allocated seats yet. Go to Allocation to assign seats.
+                                </td></tr>
                             ) : (
-                                allocatedApplicants.map(applicant => (
-                                    <tr key={applicant.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                        <td style={{ padding: '1.25rem 1.5rem' }}>
-                                            <div style={{ fontWeight: 600 }}>{applicant.name}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{applicant.category}</div>
-                                        </td>
-                                        <td style={{ padding: '1.25rem 1.5rem', fontSize: '0.875rem' }}>
-                                            {getProgramName(applicant.allocatedProgramId)}
-                                        </td>
-                                        <td style={{ padding: '1.25rem 1.5rem' }}>
-                                            {applicant.isFeePaid ? (
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--success)', fontSize: '0.85rem', fontWeight: 600 }}>
-                                                    <CreditCard size={14} /> Paid
-                                                </span>
-                                            ) : (
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#b45309', fontSize: '0.85rem', fontWeight: 600 }}>
-                                                    <Clock size={14} /> Pending
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td style={{ padding: '1.25rem 1.5rem' }}>
-                                            {applicant.admissionNumber ? (
-                                                <code style={{ backgroundColor: '#e7f5ea', color: 'var(--success)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>
-                                                    {applicant.admissionNumber}
-                                                </code>
-                                            ) : (
-                                                <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Not Generated</span>
-                                            )}
-                                        </td>
-                                        <td style={{ padding: '1.25rem 1.5rem', textAlign: 'right' }}>
-                                            {!applicant.isFeePaid ? (
-                                                <button
-                                                    onClick={() => confirmAdmission(applicant.id)}
-                                                    style={{
-                                                        backgroundColor: 'var(--primary)',
-                                                        color: 'white',
-                                                        padding: '0.5rem 1rem',
-                                                        borderRadius: 'var(--radius-md)',
-                                                        fontSize: '0.85rem',
-                                                        fontWeight: 600,
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '0.5rem'
-                                                    }}
-                                                >
-                                                    <FileCheck size={16} /> Confirm & Generate ID
-                                                </button>
-                                            ) : (
-                                                <button style={{ color: 'var(--primary)', fontSize: '0.85rem', fontWeight: 600 }}>Print Receipt</button>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
+                                allocatedApplicants.map(applicant => {
+                                    const docsOk = allDocsVerified(applicant.id);
+                                    const canConfirm = applicant.feeStatus === 'Paid' && docsOk && !applicant.admissionNumber;
+                                    return (
+                                        <tr key={applicant.id} className="table-row-hover">
+                                            <td style={tdStyle}>
+                                                <div style={{ fontWeight: 600 }}>{applicant.name}</div>
+                                                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{applicant.category} • {applicant.entryType}</div>
+                                            </td>
+                                            <td style={tdStyle}>{getProgramName(applicant.allocatedProgramId)}</td>
+                                            <td style={tdStyle}>
+                                                <span className="badge badge-info">{getQuotaName(applicant.allocatedQuotaId)}</span>
+                                            </td>
+                                            <td style={tdStyle}>
+                                                {docsOk ? (
+                                                    <span className="badge badge-success"><CheckCircle2 size={10} /> Verified</span>
+                                                ) : (
+                                                    <span className="badge badge-warning"><Clock size={10} /> Incomplete</span>
+                                                )}
+                                            </td>
+                                            <td style={tdStyle}>
+                                                {applicant.feeStatus === 'Paid' ? (
+                                                    <span className="badge badge-success"><CreditCard size={10} /> Paid</span>
+                                                ) : (
+                                                    <span className="badge badge-warning"><Clock size={10} /> Pending</span>
+                                                )}
+                                            </td>
+                                            <td style={tdStyle}>
+                                                {applicant.admissionNumber ? (
+                                                    <code style={{
+                                                        backgroundColor: '#ecfdf5', color: '#059669',
+                                                        padding: '3px 8px', borderRadius: '4px', fontSize: '0.76rem',
+                                                        fontWeight: 600, letterSpacing: '0.01em',
+                                                    }}>
+                                                        {applicant.admissionNumber}
+                                                    </code>
+                                                ) : (
+                                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>Not Generated</span>
+                                                )}
+                                            </td>
+                                            <td style={{ ...tdStyle, textAlign: 'right' }}>
+                                                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                                    {applicant.feeStatus === 'Pending' && (
+                                                        <button
+                                                            onClick={() => markFeePaid(applicant.id)}
+                                                            style={{
+                                                                backgroundColor: '#f59e0b', color: 'white',
+                                                                padding: '0.4rem 0.85rem', borderRadius: 'var(--radius-sm)',
+                                                                fontSize: '0.78rem', fontWeight: 600,
+                                                                display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                                                            }}
+                                                        >
+                                                            <CreditCard size={13} /> Mark Paid
+                                                        </button>
+                                                    )}
+                                                    {canConfirm && (
+                                                        <button
+                                                            onClick={() => handleConfirm(applicant.id)}
+                                                            style={{
+                                                                backgroundColor: 'var(--primary)', color: 'white',
+                                                                padding: '0.4rem 0.85rem', borderRadius: 'var(--radius-sm)',
+                                                                fontSize: '0.78rem', fontWeight: 600,
+                                                                display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+                                                                boxShadow: '0 2px 8px rgba(40, 167, 69, 0.25)',
+                                                            }}
+                                                        >
+                                                            <FileCheck size={13} /> Confirm & Generate ID
+                                                        </button>
+                                                    )}
+                                                    {applicant.admissionNumber && (
+                                                        <span style={{ fontSize: '0.75rem', color: 'var(--success)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                            <CheckCircle2 size={13} /> Confirmed
+                                                        </span>
+                                                    )}
+                                                    {applicant.feeStatus === 'Paid' && !docsOk && !applicant.admissionNumber && (
+                                                        <span style={{ fontSize: '0.72rem', color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                            <AlertTriangle size={12} /> Verify docs first
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             )}
                         </tbody>
                     </table>
