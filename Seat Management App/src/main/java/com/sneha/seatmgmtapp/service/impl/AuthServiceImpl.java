@@ -1,6 +1,7 @@
 package com.sneha.seatmgmtapp.service.impl;
 
 import com.sneha.seatmgmtapp.dto.request.LoginRequest;
+import com.sneha.seatmgmtapp.dto.request.UpdateProfileRequest;
 import com.sneha.seatmgmtapp.dto.request.UserRegistrationRequest;
 import com.sneha.seatmgmtapp.dto.response.UserResponse;
 import com.sneha.seatmgmtapp.entity.User;
@@ -74,6 +75,29 @@ public class AuthServiceImpl implements AuthService {
 				accessToken,
 				refreshToken
 		);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserResponse getProfile(Long userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+		return EntityMapper.toUserResponse(user);
+	}
+
+	@Override
+	public UserResponse updateProfile(Long userId, UpdateProfileRequest request) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+		user.setFullName(request.getFullName());
+		user.setEmail(request.getEmail());
+		user.setPhone(request.getPhone());
+		if (request.getPassword() != null && !request.getPassword().isBlank()) {
+			user.setPassword(passwordEncoder.encode(request.getPassword()));
+		}
+		user = userRepository.save(user);
+		return EntityMapper.toUserResponse(user);
 	}
 
 	@Override

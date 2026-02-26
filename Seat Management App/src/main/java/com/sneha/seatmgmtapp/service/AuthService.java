@@ -2,6 +2,7 @@ package com.sneha.seatmgmtapp.service;
 
 import com.sneha.seatmgmtapp.dto.request.LoginRequest;
 import com.sneha.seatmgmtapp.dto.request.UserRegistrationRequest;
+import com.sneha.seatmgmtapp.dto.request.UpdateProfileRequest;
 import com.sneha.seatmgmtapp.dto.response.UserResponse;
 import com.sneha.seatmgmtapp.utils.ApiResponseBody;
 
@@ -11,5 +12,7 @@ public interface AuthService {
     UserResponse register(UserRegistrationRequest request);
     ApiResponseBody<?> login(LoginRequest request);
     List<UserResponse> getAllUsers();
+    UserResponse getProfile(Long userId);
+    UserResponse updateProfile(Long userId, UpdateProfileRequest request);
 }
 
