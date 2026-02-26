@@ -21759,3 +21759,49 @@ Unconditional classes:
 2026-02-26 23:39:02 DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admissions
 2026-02-26 23:39:02 DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.sneha.seatmgmtapp.controller.AdmissionController.getAll(); target is of class [com.sneha.seatmgmtapp.controller.AdmissionController]
 2026-02-26 23:39:02 DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.sneha.seatmgmtapp.controller.AdmissionController.getAll(); target is of class [com.sneha.seatmgmtapp.controller.AdmissionController]
+2026-02-26 23:51:44 INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 158 class path changes (0 additions, 0 deletions, 158 modifications)
+2026-02-26 23:51:44 INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-26 23:51:44 INFO  o.a.coyote.http11.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-8085"]
+2026-02-26 23:51:44 INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-02-26 23:51:44 INFO  o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-8085"]
+2026-02-26 23:51:44 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-26 23:51:44 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Shutdown initiated...
+2026-02-26 23:51:44 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Shutdown completed.
+2026-02-26 23:51:44 INFO  c.s.s.SeatManagementAppApplication - Starting SeatManagementAppApplication v1.0.0 using Java 21.0.9 with PID 61777 (/Users/sneha/Desktop/Sneha/Seat Management app/Seat Management App/target/classes started by sneha in /Users/sneha/Desktop/Sneha/Seat Management app/Seat Management App)
+2026-02-26 23:51:44 INFO  c.s.s.SeatManagementAppApplication - The following 1 profile is active: "dev"
+2026-02-26 23:51:44 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-26 23:51:44 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 12 ms. Found 10 JPA repository interfaces.
+2026-02-26 23:51:44 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2026-02-26 23:51:44 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8085"]
+2026-02-26 23:51:44 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-02-26 23:51:44 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-26 23:51:44 INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 267 ms
+2026-02-26 23:51:44 INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-26 23:51:44 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-26 23:51:44 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-6 - Starting...
+2026-02-26 23:51:44 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-6 - Added connection org.postgresql.jdbc.PgConnection@465ee7ae
+2026-02-26 23:51:44 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-6 - Start completed.
+2026-02-26 23:51:44 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/seat_mgmt_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.19
+	Default catalog/schema: seat_mgmt_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-26 23:51:44 INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-26 23:51:44 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-26 23:51:45 WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-26 23:51:45 DEBUG o.s.s.c.a.a.c.AuthenticationConfiguration$DefaultPasswordEncoderAuthenticationManagerBuilder - No authenticationProviders and no parentAuthenticationManager defined. Returning null.
+2026-02-26 23:51:45 DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-02-26 23:51:45 INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-02-26 23:51:45 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8085"]
+2026-02-26 23:51:45 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8085 (http) with context path '/'
+2026-02-26 23:51:45 INFO  c.s.s.SeatManagementAppApplication - Started SeatManagementAppApplication in 1.25 seconds (process running for 2230.423)
+2026-02-26 23:51:45 INFO  c.s.s.config.DataInitializer - Default admin user created: admin / admin123
+2026-02-26 23:51:45 INFO  c.s.s.config.DataInitializer - Default officer user created: officer@institution.edu / officer123
+2026-02-26 23:51:45 INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
