@@ -7,18 +7,20 @@ const AdmissionConfirmation: React.FC = () => {
     const allocatedApplicants = applicants.filter(a => a.allocatedProgramId);
     const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
 
-    const getProgramName = (id?: string) => programs.find(p => p.id === id)?.name || '—';
-    const getQuotaName = (id?: string) => quotas.find(q => q.id === id)?.name || '—';
+    const getProgramName = (id?: number) => programs.find(p => p.id === id)?.name || '—';
+    const getQuotaName = (id?: number) => quotas.find(q => q.id === id)?.name || '—';
 
-    const handleConfirm = (applicantId: string) => {
+    const handleConfirm = (applicantId: number) => {
         const res = confirmAdmission(applicantId);
-        setResult(res);
-        setTimeout(() => setResult(null), 4000);
+        res.then(r => {
+            setResult(r);
+            setTimeout(() => setResult(null), 4000);
+        });
     };
 
-    const allDocsVerified = (applicantId: string) => {
+    const allDocsVerified = (applicantId: number) => {
         const app = applicants.find(a => a.id === applicantId);
-        return app?.documents.every(d => d.status === 'Verified') ?? false;
+        return app?.documents.every(d => d.status === 'VERIFIED') ?? false;
     };
 
     const cardStyle: React.CSSProperties = {
@@ -48,8 +50,8 @@ const AdmissionConfirmation: React.FC = () => {
     };
 
     // Summary counts
-    const feePending = allocatedApplicants.filter(a => a.feeStatus === 'Pending').length;
-    const feePaid = allocatedApplicants.filter(a => a.feeStatus === 'Paid').length;
+    const feePending = allocatedApplicants.filter(a => a.feeStatus === 'PENDING').length;
+    const feePaid = allocatedApplicants.filter(a => a.feeStatus === 'PAID').length;
     const confirmed = allocatedApplicants.filter(a => a.admissionNumber).length;
 
     return (
@@ -135,7 +137,7 @@ const AdmissionConfirmation: React.FC = () => {
                             ) : (
                                 allocatedApplicants.map(applicant => {
                                     const docsOk = allDocsVerified(applicant.id);
-                                    const canConfirm = applicant.feeStatus === 'Paid' && docsOk && !applicant.admissionNumber;
+                                    const canConfirm = applicant.feeStatus === 'PAID' && docsOk && !applicant.admissionNumber;
                                     return (
                                         <tr key={applicant.id} className="table-row-hover">
                                             <td style={tdStyle}>
@@ -154,7 +156,7 @@ const AdmissionConfirmation: React.FC = () => {
                                                 )}
                                             </td>
                                             <td style={tdStyle}>
-                                                {applicant.feeStatus === 'Paid' ? (
+                                                {applicant.feeStatus === 'PAID' ? (
                                                     <span className="badge badge-success"><CreditCard size={10} /> Paid</span>
                                                 ) : (
                                                     <span className="badge badge-warning"><Clock size={10} /> Pending</span>
@@ -175,7 +177,7 @@ const AdmissionConfirmation: React.FC = () => {
                                             </td>
                                             <td style={{ ...tdStyle, textAlign: 'right' }}>
                                                 <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                                    {applicant.feeStatus === 'Pending' && (
+                                                    {applicant.feeStatus === 'PENDING' && (
                                                         <button
                                                             onClick={() => markFeePaid(applicant.id)}
                                                             style={{
@@ -207,7 +209,7 @@ const AdmissionConfirmation: React.FC = () => {
                                                             <CheckCircle2 size={13} /> Confirmed
                                                         </span>
                                                     )}
-                                                    {applicant.feeStatus === 'Paid' && !docsOk && !applicant.admissionNumber && (
+                                                    {applicant.feeStatus === 'PAID' && !docsOk && !applicant.admissionNumber && (
                                                         <span style={{ fontSize: '0.72rem', color: '#d97706', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                                                             <AlertTriangle size={12} /> Verify docs first
                                                         </span>

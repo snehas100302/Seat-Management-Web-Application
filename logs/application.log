@@ -1,0 +1,145 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+2026-02-26 16:51:35 INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.0.1.Final
+2026-02-26 16:51:35 INFO  c.s.s.SeatManagementAppApplication - Starting SeatManagementAppApplication v1.0.0 using Java 25.0.2 with PID 18704 (/Users/sneha/Desktop/Sneha/Seat Management app/Seat Management App/target/classes started by sneha in /Users/sneha/Desktop/Sneha/Seat Management app/Seat Management App)
+2026-02-26 16:51:35 INFO  c.s.s.SeatManagementAppApplication - The following 1 profile is active: "dev"
+2026-02-26 16:51:35 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-02-26 16:51:35 INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-02-26 16:51:35 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-26 16:51:35 INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 25 ms. Found 10 JPA repository interfaces.
+2026-02-26 16:51:36 INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8085 (http)
+2026-02-26 16:51:36 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8085"]
+2026-02-26 16:51:36 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-02-26 16:51:36 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-02-26 16:51:36 INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 670 ms
+2026-02-26 16:51:36 INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-02-26 16:51:36 INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-02-26 16:51:36 INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-26 16:51:36 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-02-26 16:51:36 INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@620cb378
+2026-02-26 16:51:36 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-02-26 16:51:36 INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/seat_mgmt_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.19
+	Default catalog/schema: seat_mgmt_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-26 16:51:36 INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: set client_min_messages = WARNING
+Hibernate: alter table if exists admissions drop constraint if exists FK3avg39yap1lyjodxtdbs6wiwc
+Hibernate: alter table if exists admissions drop constraint if exists FK1sl9579ry2l50j6a6xjamvoxk
+Hibernate: alter table if exists applicants drop constraint if exists FK44r54mr6oki4fojokmojl5n86
+Hibernate: alter table if exists campuses drop constraint if exists FKoe16xn7nh254x44mivp2jci4
+Hibernate: alter table if exists departments drop constraint if exists FKtp43qehpw1o4xlfh8xymdiikq
+Hibernate: alter table if exists document_checklists drop constraint if exists FKcykvw9q288bg33060q34afjo9
+Hibernate: alter table if exists programs drop constraint if exists FKhebyyeh12qqr26b9u4yot3wb7
+Hibernate: alter table if exists programs drop constraint if exists FK7xrusj91mbbujeaxtrrdowj7e
+Hibernate: alter table if exists quotas drop constraint if exists FKdku8gecijd096x63wry0f0wfd
+Hibernate: drop table if exists academic_years cascade
+Hibernate: drop table if exists admissions cascade
+Hibernate: drop table if exists applicants cascade
+Hibernate: drop table if exists campuses cascade
+Hibernate: drop table if exists departments cascade
+Hibernate: drop table if exists document_checklists cascade
+Hibernate: drop table if exists institutions cascade
+Hibernate: drop table if exists programs cascade
+Hibernate: drop table if exists quotas cascade
+Hibernate: drop table if exists users cascade
+Hibernate: drop type if exists UserRole cascade
+Hibernate: drop type if exists QuotaType cascade
+Hibernate: drop type if exists EntryType cascade
+Hibernate: drop type if exists CourseType cascade
+Hibernate: drop type if exists DocumentStatus cascade
+Hibernate: drop type if exists Category cascade
+Hibernate: drop type if exists FeeStatus cascade
+Hibernate: drop type if exists AdmissionStatus cascade
+Hibernate: create type AdmissionStatus as enum ('CANCELLED','CONFIRMED','DOCUMENTS_VERIFIED','FEE_PAID','PENDING','SEAT_ALLOCATED')
+Hibernate: create cast (varchar as AdmissionStatus) with inout as implicit
+Hibernate: create cast (AdmissionStatus as varchar) with inout as implicit
+Hibernate: create type FeeStatus as enum ('PAID','PENDING')
+Hibernate: create cast (varchar as FeeStatus) with inout as implicit
+Hibernate: create cast (FeeStatus as varchar) with inout as implicit
+Hibernate: create type Category as enum ('EWS','GM','OBC','SC','ST')
+Hibernate: create cast (varchar as Category) with inout as implicit
+Hibernate: create cast (Category as varchar) with inout as implicit
+Hibernate: create type DocumentStatus as enum ('PENDING','SUBMITTED','VERIFIED')
+Hibernate: create cast (varchar as DocumentStatus) with inout as implicit
+Hibernate: create cast (DocumentStatus as varchar) with inout as implicit
+Hibernate: create type CourseType as enum ('PG','UG')
+Hibernate: create cast (varchar as CourseType) with inout as implicit
+Hibernate: create cast (CourseType as varchar) with inout as implicit
+Hibernate: create type EntryType as enum ('LATERAL','REGULAR')
+Hibernate: create cast (varchar as EntryType) with inout as implicit
+Hibernate: create cast (EntryType as varchar) with inout as implicit
+Hibernate: create type QuotaType as enum ('COMEDK','KCET','MANAGEMENT')
+Hibernate: create cast (varchar as QuotaType) with inout as implicit
+Hibernate: create cast (QuotaType as varchar) with inout as implicit
+Hibernate: create type UserRole as enum ('ADMIN','ADMISSION_OFFICER','MANAGEMENT')
+Hibernate: create cast (varchar as UserRole) with inout as implicit
+Hibernate: create cast (UserRole as varchar) with inout as implicit
+Hibernate: create table academic_years (active_flag boolean, del_flag boolean, end_year integer not null, is_current boolean not null, start_year integer not null, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, updated_at timestamp(6), primary key (id))
+Hibernate: create table admissions (active_flag boolean, del_flag boolean, applicant_id bigint not null unique, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, quota_id bigint not null, updated_at timestamp(6), admission_number varchar(255) unique, admission_status AdmissionStatus not null, fee_status FeeStatus not null, primary key (id))
+Hibernate: create table applicants (active_flag boolean, del_flag boolean, qualifying_marks float(53), created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, program_id bigint not null, updated_at timestamp(6), guardian_phone varchar(15), phone varchar(15), admission_mode varchar(255) not null check ((admission_mode in ('GOVERNMENT','MANAGEMENT'))), allotment_number varchar(255), date_of_birth varchar(255), email varchar(255) unique, entry_type varchar(255) not null check ((entry_type in ('REGULAR','LATERAL'))), guardian_name varchar(255), name varchar(255) not null, qualifying_exam varchar(255), quota_type varchar(255) not null check ((quota_type in ('KCET','COMEDK','MANAGEMENT'))), category Category not null, primary key (id))
+Hibernate: create table campuses (active_flag boolean, del_flag boolean, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, institution_id bigint not null, updated_at timestamp(6), code varchar(20), address varchar(255), name varchar(255) not null, primary key (id))
+Hibernate: create table departments (active_flag boolean, del_flag boolean, campus_id bigint not null, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, updated_at timestamp(6), code varchar(20), name varchar(255) not null, primary key (id))
+Hibernate: create table document_checklists (active_flag boolean, del_flag boolean, applicant_id bigint not null, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, updated_at timestamp(6), remarks varchar(500), document_name varchar(255) not null, status DocumentStatus not null, primary key (id))
+Hibernate: create table institutions (active_flag boolean, del_flag boolean, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, updated_at timestamp(6), code varchar(20), address varchar(255), contact_email varchar(255), contact_phone varchar(255), name varchar(255) not null, primary key (id))
+Hibernate: create table programs (active_flag boolean, del_flag boolean, supernumerary_seats integer, total_intake integer not null check ((total_intake>=1)), academic_year_id bigint not null, created_at timestamp(6) not null, deleted_at timestamp(6), department_id bigint not null, id bigint generated by default as identity, updated_at timestamp(6), code varchar(20), name varchar(255) not null, course_type CourseType not null, entry_type EntryType not null, primary key (id))
+Hibernate: create table quotas (active_flag boolean, del_flag boolean, filled_seats integer not null, total_seats integer not null check ((total_seats>=0)), created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, program_id bigint not null, updated_at timestamp(6), quota_type QuotaType not null, primary key (id), unique (program_id, quota_type))
+Hibernate: create table users (active_flag boolean, del_flag boolean, created_at timestamp(6) not null, deleted_at timestamp(6), id bigint generated by default as identity, updated_at timestamp(6), email varchar(255), full_name varchar(255) not null, password varchar(255) not null, phone varchar(255), username varchar(255) not null unique, role UserRole not null, primary key (id))
+Hibernate: alter table if exists admissions add constraint FK3avg39yap1lyjodxtdbs6wiwc foreign key (applicant_id) references applicants
+Hibernate: alter table if exists admissions add constraint FK1sl9579ry2l50j6a6xjamvoxk foreign key (quota_id) references quotas
+Hibernate: alter table if exists applicants add constraint FK44r54mr6oki4fojokmojl5n86 foreign key (program_id) references programs
+Hibernate: alter table if exists campuses add constraint FKoe16xn7nh254x44mivp2jci4 foreign key (institution_id) references institutions
+Hibernate: alter table if exists departments add constraint FKtp43qehpw1o4xlfh8xymdiikq foreign key (campus_id) references campuses
+Hibernate: alter table if exists document_checklists add constraint FKcykvw9q288bg33060q34afjo9 foreign key (applicant_id) references applicants
+Hibernate: alter table if exists programs add constraint FKhebyyeh12qqr26b9u4yot3wb7 foreign key (academic_year_id) references academic_years
+Hibernate: alter table if exists programs add constraint FK7xrusj91mbbujeaxtrrdowj7e foreign key (department_id) references departments
+Hibernate: alter table if exists quotas add constraint FKdku8gecijd096x63wry0f0wfd foreign key (program_id) references programs
+2026-02-26 16:51:36 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-26 16:51:37 INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-26 16:51:37 WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-26 16:51:37 DEBUG o.s.s.c.a.a.c.AuthenticationConfiguration$DefaultPasswordEncoderAuthenticationManagerBuilder - No authenticationProviders and no parentAuthenticationManager defined. Returning null.
+2026-02-26 16:51:37 DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-02-26 16:51:38 INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-02-26 16:51:38 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8085"]
+2026-02-26 16:51:38 WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-02-26 16:51:38 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-26 16:51:38 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-02-26 16:51:38 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-02-26 16:51:38 INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-02-26 16:51:38 ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8085 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8085 or configure this application to listen on another port.
+
+2026-02-26 16:52:19 INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-26 16:52:19 INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-02-26 16:52:19 INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-26 16:52:19 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-02-26 16:52:19 INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

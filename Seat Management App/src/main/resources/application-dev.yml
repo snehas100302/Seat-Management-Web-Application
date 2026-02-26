@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: Seat Management
+    version: 1.0.0
+  jackson:
+    time-zone: Asia/Kolkata
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 10MB
+      max-file-size: 10MB
+  web:
+    resources:
+      cache:
+        period: 31536000
+      chain:
+        enabled: true
+        cache: true
+    error:
+      whitelabel:
+        enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/seat_mgmt_db
+    username: postgres
+    password: root1234
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  threads:
+    virtual:
+      enabled: true
+# ============================================================================
+# JWT Configuration
+# ============================================================================
+jwt:
+  secret:
+    key: U0VDUkVUX0tFWV9GQVZXT1JLU19TRUNSRVRfS0VZX19TRUNSRVRfS0VZX0ZBVldPUktTX1NFQ1JFVF9LRVk=
+  access:
+    expiry:
+      minutes: 15
+  refresh:
+    expiry:
+      days: 150
+
+# ============================================================================
+# Logging Configuration - Development
+# ============================================================================
+logging:
+  level:
+    root: info
+    com.delihurry.delihurry_api_modulith: debug
+    org.springframework.security: debug
+    com.delihurry.delihurry_api_modulith.partner.service.scheduler: DEBUG
+
+
+# ============================================================================
+# Server Configuration - Development
+# ============================================================================
+server:
+  port: 8085
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - metrics
+          - info
+  endpoint:
+    health:
+      show-details: always

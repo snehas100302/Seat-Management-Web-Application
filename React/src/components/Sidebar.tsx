@@ -18,24 +18,24 @@ const Sidebar: React.FC = () => {
     const menuGroups = [
         {
             title: 'Admin',
-            roles: ['admin'],
+            roles: ['Admin'],
             items: [
                 { name: 'Master Setup', path: '/master-setup', icon: Settings },
-                { name: 'Seat Matrix', path: '/seat-matrix', icon: Grid3X3 },
+                { name: 'Seat Matrix & Quotas', path: '/seat-matrix', icon: Grid3X3 },
             ]
         },
         {
-            title: 'Operations',
-            roles: ['officer'],
+            title: 'Admission Officer',
+            roles: ['Admission Officer'],
             items: [
                 { name: 'Applicants', path: '/applicants', icon: Users },
-                { name: 'Allocation', path: '/allocation', icon: UserPlus },
-                { name: 'Confirmation', path: '/confirmation', icon: CheckCircle2 },
+                { name: 'Seat Allocation', path: '/allocation', icon: UserPlus },
+                { name: 'Admission Confirmation', path: '/confirmation', icon: CheckCircle2 },
             ]
         },
         {
-            title: 'Analysis',
-            roles: ['admin', 'officer', 'management'],
+            title: 'Overview',
+            roles: ['Admin', 'Admission Officer', 'Management'],
             items: [
                 { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
             ]

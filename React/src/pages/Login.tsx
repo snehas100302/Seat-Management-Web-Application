@@ -6,7 +6,7 @@ import { LogIn, Building2, Loader2, Eye, EyeOff, AlertCircle } from 'lucide-reac
 const Login: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +17,7 @@ const Login: React.FC = () => {
         setError('');
         setIsLoading(true);
         try {
-            const result = await login(email, password);
+            const result = await login(username, password);
             if (result.success) {
                 navigate('/dashboard');
             } else {
@@ -133,11 +133,11 @@ const Login: React.FC = () => {
                             textTransform: 'uppercase',
                             letterSpacing: '0.05em'
                         }}>
-                            Email Address
+                            Username
                         </label>
                         <input
-                            type="email"
-                            placeholder="name@institution.edu"
+                            type="text"
+                            placeholder="username"
                             style={{
                                 width: '100%',
                                 padding: '0.85rem 1rem',
@@ -149,8 +149,8 @@ const Login: React.FC = () => {
                                 outline: 'none',
                                 transition: 'border-color 0.2s, box-shadow 0.2s'
                             }}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             onFocus={(e) => {
                                 e.target.style.borderColor = 'rgba(40, 167, 69, 0.5)';
                                 e.target.style.boxShadow = '0 0 0 3px rgba(40, 167, 69, 0.1)';
@@ -262,7 +262,7 @@ const Login: React.FC = () => {
                         Demo Credentials
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.8rem', color: 'rgba(255,255,255,0.55)' }}>
-                        <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Admin:</strong> admin@institution.edu / admin123</div>
+                        <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Admin:</strong> admin / admin123</div>
                         <div><strong style={{ color: 'rgba(255,255,255,0.7)' }}>Officer:</strong> officer@institution.edu / officer123</div>
                     </div>
                 </div>

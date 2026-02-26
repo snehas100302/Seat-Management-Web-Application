@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!--
+        Logback configuration with rolling file appenders.
+        Uses Spring property placeholders so you can override via application.yml or environment variables.
+
+        Available properties (defaults shown):
+          - LOG_DIR (default: ${user.dir}/logs)
+          - MAX_FILE_SIZE (default: 5MB)
+          - MAX_HISTORY (default: 50)
+          - LOG_PATTERN (default: %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n)
+    -->
+
+    <!-- Property wiring (Spring will substitute values from Spring Environment) -->
+    <!-- Default LOG_DIR is server working directory /logs so logs live next to the server process -->
+    <property name="LOG_DIR" value="${LOG_DIR:-${app.logging.dir:-${user.dir}/logs}}"/>
+    <property name="MAX_FILE_SIZE" value="${LOG_MAX_FILE_SIZE:-5MB}"/>
+    <property name="MAX_HISTORY" value="${LOG_MAX_HISTORY:-50}"/>
+    <property name="LOG_PATTERN" value="${LOG_PATTERN:-%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n}"/>
+
+    <!-- Console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Rolling file appender for application logs -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover and index when size exceeds -->
+            <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <!-- totalSizeCap can be set via LOG_TOTAL_SIZE_CAP if desired -->
+            <totalSizeCap>${LOG_TOTAL_SIZE_CAP:-1GB}</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Rolling file appender for mail logs (separate file) -->
+    <appender name="MAIL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/mail/mail.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/mail/mail.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <totalSizeCap>${LOG_TOTAL_SIZE_CAP:-500MB}</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- You can add more appenders here (e.g., partner-specific logs) -->
+
+    <!-- Example: logger for partner scheduler set to DEBUG (can be controlled in application-*.yml via logging.level) -->
+    <logger name="com.delihurry.delihurry_api_modulith.partner.service.scheduler" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Mail logger example: map any package that logs mail events to MAIL_FILE -->
+    <logger name="com.delihurry.delihurry_api_modulith.mail" level="INFO" additivity="false">
+        <appender-ref ref="MAIL_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- Root logger: write to both console and file -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

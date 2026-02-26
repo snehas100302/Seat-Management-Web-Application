@@ -34,29 +34,29 @@ function AppRoutes() {
 
                             {/* Admin Routes */}
                             <Route path="/master-setup" element={
-                                <ProtectedRoute allowedRoles={['admin']}>
+                                <ProtectedRoute allowedRoles={['Admin']}>
                                     <MasterSetup />
                                 </ProtectedRoute>
                             } />
                             <Route path="/seat-matrix" element={
-                                <ProtectedRoute allowedRoles={['admin']}>
+                                <ProtectedRoute allowedRoles={['Admin']}>
                                     <SeatMatrix />
                                 </ProtectedRoute>
                             } />
 
                             {/* Officer Routes */}
                             <Route path="/applicants" element={
-                                <ProtectedRoute allowedRoles={['officer', 'admin']}>
+                                <ProtectedRoute allowedRoles={['Admission Officer', 'Admin']}>
                                     <ApplicantManagement />
                                 </ProtectedRoute>
                             } />
                             <Route path="/allocation" element={
-                                <ProtectedRoute allowedRoles={['officer', 'admin']}>
+                                <ProtectedRoute allowedRoles={['Admission Officer', 'Admin']}>
                                     <AdmissionAllocation />
                                 </ProtectedRoute>
                             } />
                             <Route path="/confirmation" element={
-                                <ProtectedRoute allowedRoles={['officer', 'admin']}>
+                                <ProtectedRoute allowedRoles={['Admission Officer', 'Admin']}>
                                     <AdmissionConfirmation />
                                 </ProtectedRoute>
                             } />

@@ -30,7 +30,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Seat Management CMS</h2>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.name}</div>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{user?.username}</div>
                             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{user?.role}</div>
                         </div>
                         <div style={{
@@ -44,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             justifyContent: 'center',
                             fontSize: '0.875rem',
                             fontWeight: 700
-                        }}>{user?.name?.substring(0, 1) || 'U'}</div>
+                        }}>{user?.username?.substring(0, 1) || 'U'}</div>
                     </div>
                 </header>
                 {children}

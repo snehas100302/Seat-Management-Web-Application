@@ -1,12 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type UserRole = 'admin' | 'officer' | 'management';
+export type UserRole = 'Admin' | 'Admission Officer' | 'Management';
 
 export interface User {
-    id: string;
-    name: string;
-    role: UserRole;
+    id: string | number;
+    username: string;
+    fullName: string;
     email: string;
+    phone: string | null;
+    role: string;
+    isActive: boolean;
+    accessToken?: string;
 }
 
 interface AuthContextType {
@@ -16,11 +20,7 @@ interface AuthContextType {
     isLoading: boolean;
 }
 
-// Hardcoded credentials
-const CREDENTIALS: { email: string; password: string; role: UserRole; name: string }[] = [
-    { email: 'admin@institution.edu', password: 'admin123', role: 'admin', name: 'System Administrator' },
-    { email: 'officer@institution.edu', password: 'officer123', role: 'officer', name: 'Admission Officer' },
-];
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8085';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -36,34 +36,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
     }, []);
 
-    const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+    const login = async (username: string, password: string): Promise<{ success: boolean; message: string }> => {
         setIsLoading(true);
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        const match = CREDENTIALS.find(c => c.email === email && c.password === password);
+            const result = await response.json();
+console.log("result ",result);
+            if (response.ok && result.code === 200) {
+                const newUser: User = {
+                    ...result.data,
+                    accessToken: result.accessToken
+                };
 
-        if (!match) {
+                setUser(newUser);
+                localStorage.setItem('seat_cms_user', JSON.stringify(newUser));
+                localStorage.setItem('seat_cms_token', result.accessToken);
+                setIsLoading(false);
+                return { success: true, message: 'Login successful!' };
+            } else {
+                setIsLoading(false);
+                return { success: false, message: result.message || result.errorMsg || 'Invalid credentials' };
+            }
+        } catch (error) {
+            console.error('Login error:', error);
             setIsLoading(false);
-            return { success: false, message: 'Invalid email or password. Please try again.' };
+            return { success: false, message: 'Network error or server is unreachable.' };
         }
-
-        const newUser: User = {
-            id: Math.random().toString(36).substring(7),
-            name: match.name,
-            role: match.role,
-            email: match.email
-        };
-
-        setUser(newUser);
-        localStorage.setItem('seat_cms_user', JSON.stringify(newUser));
-        setIsLoading(false);
-        return { success: true, message: 'Login successful!' };
     };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('seat_cms_user');
+        localStorage.removeItem('seat_cms_token');
     };
 
     return (

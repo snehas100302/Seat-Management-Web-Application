@@ -3,10 +3,10 @@ import { UserPlus, ShieldCheck, AlertTriangle, CheckCircle, ArrowRight, Ban } fr
 import { useAppContext } from '../context/AppContext';
 
 const AdmissionAllocation: React.FC = () => {
-    const { applicants, programs, quotas, allocateSeat } = useAppContext();
-    const [selectedApplicantId, setSelectedApplicantId] = useState('');
-    const [selectedProgramId, setSelectedProgramId] = useState('');
-    const [selectedQuotaId, setSelectedQuotaId] = useState('');
+    const { applicants, programs, quotas, allocateSeat, institutions, campuses, departments } = useAppContext();
+    const [selectedApplicantId, setSelectedApplicantId] = useState<number | ''>('');
+    const [selectedProgramId, setSelectedProgramId] = useState<number | ''>('');
+    const [selectedQuotaId, setSelectedQuotaId] = useState<number | ''>('');
     const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
     const [mode, setMode] = useState<'government' | 'management'>('government');
 
@@ -15,9 +15,20 @@ const AdmissionAllocation: React.FC = () => {
     const selectedProgram = programs.find(p => p.id === selectedProgramId);
     const programQuotas = quotas.filter(q => q.programId === selectedProgramId);
 
-    const handleAllocate = () => {
+    const getHierarchyLabel = (programId: number) => {
+        const prog = programs.find(p => p.id === programId);
+        if (!prog) return 'Unknown program';
+        const dept = departments.find(d => d.id === prog.departmentId);
+        const camp = campuses.find(c => c.id === dept?.campusId);
+        const inst = institutions.find(i => i.id === camp?.institutionId);
+        const parts = [inst?.name, camp?.name, dept?.name, prog.name].filter(Boolean);
+        return parts.join(' / ');
+    };
+
+    const handleAllocate = async () => {
         if (!selectedApplicantId || !selectedProgramId || !selectedQuotaId) return;
-        const res = allocateSeat(selectedApplicantId, selectedProgramId, selectedQuotaId);
+        const qName = quotas.find(q => q.id === selectedQuotaId)?.name || '';
+        const res = await allocateSeat(selectedApplicantId, selectedProgramId, qName);
         setResult(res);
         if (res.success) {
             setSelectedApplicantId('');
@@ -113,7 +124,7 @@ const AdmissionAllocation: React.FC = () => {
                             {stepBadge(1, true)}
                             <h3 style={{ fontSize: '0.95rem', fontWeight: 600 }}>Select Applicant</h3>
                         </div>
-                        <select style={inputStyle} value={selectedApplicantId} onChange={e => setSelectedApplicantId(e.target.value)}>
+                        <select style={inputStyle} value={selectedApplicantId} onChange={e => setSelectedApplicantId(Number(e.target.value) || '')}>
                             <option value="">Choose an applicant...</option>
                             {eligibleApplicants.map(a => (
                                 <option key={a.id} value={a.id}>{a.name} ({a.category}) — {a.marks}% — {a.quotaType}</option>
@@ -135,15 +146,33 @@ const AdmissionAllocation: React.FC = () => {
                             {stepBadge(2, !!selectedApplicantId)}
                             <h3 style={{ fontSize: '0.95rem', fontWeight: 600 }}>Choose Program & Quota</h3>
                         </div>
-                        <select style={{ ...inputStyle, marginBottom: '1rem' }} value={selectedProgramId} onChange={e => { setSelectedProgramId(e.target.value); setSelectedQuotaId(''); }}>
-                            <option value="">Select Program...</option>
-                            {programs.map(p => <option key={p.id} value={p.id}>{p.name} (Intake: {p.totalIntake})</option>)}
+                        <select
+                            style={{ ...inputStyle, marginBottom: '0.75rem' }}
+                            value={selectedProgramId}
+                            onChange={e => { setSelectedProgramId(Number(e.target.value) || ''); setSelectedQuotaId(''); }}
+                            disabled={programs.length === 0}
+                        >
+                            <option value="">Select Program (Inst / Campus / Dept)...</option>
+                            {programs.map(p => (
+                                <option key={p.id} value={p.id}>{getHierarchyLabel(p.id)} (Intake: {p.totalIntake})</option>
+                            ))}
                         </select>
+                        {programs.length === 0 && (
+                            <div style={{ marginBottom: '0.75rem', padding: '0.65rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#fef9c3', border: '1px solid #fde68a', color: '#854d0e', fontSize: '0.82rem' }}>
+                                No programs found. Please add programs and quotas in Seat Matrix / Master Setup first.
+                            </div>
+                        )}
 
-                        {selectedProgram && (
+                        {selectedProgram && programQuotas.length === 0 && (
+                            <div style={{ marginBottom: '0.75rem', padding: '0.65rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', color: '#1f2937', fontSize: '0.82rem' }}>
+                                No quotas configured for this program. Set KCET/COMEDK/Management seats in Seat Matrix, then return to allocate.
+                            </div>
+                        )}
+
+                        {selectedProgram && programQuotas.length > 0 && (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                                 {programQuotas
-                                    .filter(q => mode === 'management' ? q.name === 'Management' : q.name !== 'Management')
+                                    .filter(q => mode === 'management' ? q.name === 'MANAGEMENT' : q.name !== 'MANAGEMENT')
                                     .map(quota => {
                                         const remaining = quota.totalSeats - quota.filledSeats;
                                         const isFull = remaining <= 0;
@@ -285,6 +314,80 @@ const AdmissionAllocation: React.FC = () => {
                             )}
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Institutions → Campuses → Departments → Programs with totals */}
+            <div style={{ marginTop: '2rem', ...cardStyle, padding: '1.25rem 1.5rem' }} className="card-animate">
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem' }}>Seat Overview by Institution</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {institutions.map(inst => {
+                        const instCampuses = campuses.filter(c => c.institutionId === inst.id);
+                        // Placeholder specials (not persisted anywhere yet)
+                        const supernumerary = 0;
+                        const jkQuota = 0;
+
+                        return (
+                            <div key={inst.id} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                    <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{inst.name}</div>
+                                    <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                                        <span>Supernumerary: <strong>{supernumerary}</strong></span>
+                                        <span>J&K: <strong>{jkQuota}</strong></span>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                    {instCampuses.map(camp => {
+                                        const campDepts = departments.filter(d => d.campusId === camp.id);
+                                        return (
+                                            <div key={camp.id} style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f9fafb', border: '1px solid var(--border-color)' }}>
+                                                <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.35rem' }}>{camp.name}</div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                                    {campDepts.map(dept => {
+                                                        const deptPrograms = programs.filter(p => p.departmentId === dept.id);
+                                                        return (
+                                                            <div key={dept.id} style={{ padding: '0.65rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'white', border: '1px dashed var(--border-color)' }}>
+                                                                <div style={{ fontWeight: 600, fontSize: '0.88rem', marginBottom: '0.4rem' }}>{dept.name}</div>
+                                                                {deptPrograms.length === 0 ? (
+                                                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>No programs</div>
+                                                                ) : (
+                                                                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                                                                        <thead>
+                                                                            <tr style={{ background: '#f8fafc' }}>
+                                                                                <th style={{ textAlign: 'left', padding: '6px', borderBottom: '1px solid var(--border-color)' }}>Program</th>
+                                                                                <th style={{ textAlign: 'center', padding: '6px', borderBottom: '1px solid var(--border-color)' }}>Total Seats</th>
+                                                                                <th style={{ textAlign: 'center', padding: '6px', borderBottom: '1px solid var(--border-color)' }}>Allocated</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {deptPrograms.map(p => {
+                                                                                const pQuotas = quotas.filter(q => q.programId === p.id);
+                                                                                const totalSeats = pQuotas.reduce((sum, q) => sum + (q.totalSeats || 0), 0);
+                                                                                const allocated = pQuotas.reduce((sum, q) => sum + (q.filledSeats || 0), 0);
+                                                                                return (
+                                                                                    <tr key={p.id}>
+                                                                                        <td style={{ padding: '6px', borderBottom: '1px solid var(--border-color)' }}>{p.name}</td>
+                                                                                        <td style={{ padding: '6px', textAlign: 'center', borderBottom: '1px solid var(--border-color)' }}>{totalSeats}</td>
+                                                                                        <td style={{ padding: '6px', textAlign: 'center', borderBottom: '1px solid var(--border-color)', color: allocated >= totalSeats ? 'var(--danger)' : 'var(--primary)' }}>
+                                                                                            {allocated}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                );
+                                                                            })}
+                                                                        </tbody>
+                                                                    </table>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

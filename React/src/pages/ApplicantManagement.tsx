@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { Users, UserPlus, Search, ChevronDown, ChevronUp, FileText, CheckCircle, Clock, X } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
-import type { EntryType, AdmissionMode, QuotaName, DocStatus } from '../context/AppContext';
+import type { EntryType, QuotaName, DocStatus } from '../context/AppContext';
 
 const ApplicantManagement: React.FC = () => {
-    const { applicants, programs, addApplicant, updateDocumentStatus } = useAppContext();
+    const { applicants, addApplicant, updateDocumentStatus } = useAppContext();
     const [showModal, setShowModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [expandedId, setExpandedId] = useState<number | null>(null);
 
     // Form state
     const [form, setForm] = useState({
         name: '', email: '', phone: '', dob: '', gender: 'Male',
-        address: '', category: 'GM', entryType: 'Regular' as EntryType,
+        address: '', category: 'GM', entryType: 'REGULAR' as EntryType,
         quotaType: 'KCET' as QuotaName, qualifyingExam: '', marks: 0,
-        allotmentNumber: '', programId: '', admissionMode: 'Government' as AdmissionMode,
     });
 
     const filteredApplicants = applicants.filter(a =>
@@ -23,27 +22,30 @@ const ApplicantManagement: React.FC = () => {
         a.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleSubmit = () => {
-        if (!form.name || !form.programId) return;
-        addApplicant(form);
-        setForm({
-            name: '', email: '', phone: '', dob: '', gender: 'Male',
-            address: '', category: 'GM', entryType: 'Regular',
-            quotaType: 'KCET', qualifyingExam: '', marks: 0,
-            allotmentNumber: '', programId: '', admissionMode: 'Government',
-        });
-        setShowModal(false);
+    const handleSubmit = async () => {
+        if (!form.name) return;
+        try {
+            await addApplicant(form);
+            setForm({
+                name: '', email: '', phone: '', dob: '', gender: 'Male',
+                address: '', category: 'GM', entryType: 'REGULAR',
+                quotaType: 'KCET', qualifyingExam: '', marks: 0,
+            });
+            setShowModal(false);
+        } catch (err) {
+            console.error('Error submitting form:', err);
+        }
     };
 
     const nextDocStatus = (status: DocStatus): DocStatus => {
-        if (status === 'Pending') return 'Submitted';
-        if (status === 'Submitted') return 'Verified';
-        return 'Verified';
+        if (status === 'PENDING') return 'SUBMITTED';
+        if (status === 'SUBMITTED') return 'VERIFIED';
+        return 'VERIFIED';
     };
 
     const docBadge = (status: DocStatus) => {
-        const cls = status === 'Verified' ? 'badge-success' : status === 'Submitted' ? 'badge-warning' : 'badge-neutral';
-        const Icon = status === 'Verified' ? CheckCircle : Clock;
+        const cls = status === 'VERIFIED' ? 'badge-success' : status === 'SUBMITTED' ? 'badge-warning' : 'badge-neutral';
+        const Icon = status === 'VERIFIED' ? CheckCircle : Clock;
         return <span className={`badge ${cls}`}><Icon size={10} /> {status}</span>;
     };
 
@@ -90,9 +92,9 @@ const ApplicantManagement: React.FC = () => {
         marginBottom: '0.3rem',
     };
 
-    const allVerified = (id: string) => {
+    const allVerified = (id: number) => {
         const app = applicants.find(a => a.id === id);
-        return app?.documents.every(d => d.status === 'Verified');
+        return app?.documents.every(d => d.status === 'VERIFIED');
     };
 
     return (
@@ -136,8 +138,8 @@ const ApplicantManagement: React.FC = () => {
                 fontWeight: 600,
             }}>
                 <span>Total: <strong>{applicants.length}</strong></span>
-                <span style={{ color: 'var(--success)' }}>Docs Verified: <strong>{applicants.filter(a => a.documents.every(d => d.status === 'Verified')).length}</strong></span>
-                <span style={{ color: '#d97706' }}>Pending Docs: <strong>{applicants.filter(a => a.documents.some(d => d.status !== 'Verified')).length}</strong></span>
+                <span style={{ color: 'var(--success)' }}>Docs Verified: <strong>{applicants.filter(a => a.documents.every(d => d.status === 'VERIFIED')).length}</strong></span>
+                <span style={{ color: '#d97706' }}>Pending Docs: <strong>{applicants.filter(a => a.documents.some(d => d.status !== 'VERIFIED')).length}</strong></span>
                 <span style={{ color: '#2563eb' }}>Allocated: <strong>{applicants.filter(a => a.allocatedProgramId).length}</strong></span>
             </div>
 
@@ -161,7 +163,6 @@ const ApplicantManagement: React.FC = () => {
                             <th style={thStyle}>Applicant</th>
                             <th style={thStyle}>Category</th>
                             <th style={thStyle}>Entry / Quota</th>
-                            <th style={thStyle}>Program</th>
                             <th style={thStyle}>Marks</th>
                             <th style={thStyle}>Documents</th>
                             <th style={thStyle}>Status</th>
@@ -170,12 +171,11 @@ const ApplicantManagement: React.FC = () => {
                     </thead>
                     <tbody>
                         {filteredApplicants.length === 0 ? (
-                            <tr><td colSpan={8} style={{ ...tdStyle, textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                            <tr><td colSpan={7} style={{ ...tdStyle, textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
                                 {applicants.length === 0 ? 'No applicants registered yet. Click "Add New Applicant" to get started.' : 'No matching applicants found.'}
                             </td></tr>
                         ) : (
                             filteredApplicants.map(applicant => {
-                                const prog = programs.find(p => p.id === applicant.programId);
                                 const isExpanded = expandedId === applicant.id;
                                 return (
                                     <React.Fragment key={applicant.id}>
@@ -189,7 +189,6 @@ const ApplicantManagement: React.FC = () => {
                                                 <div style={{ fontSize: '0.82rem' }}>{applicant.entryType}</div>
                                                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{applicant.quotaType}</div>
                                             </td>
-                                            <td style={tdStyle}>{prog?.name || '—'}</td>
                                             <td style={tdStyle}><strong>{applicant.marks}%</strong></td>
                                             <td style={tdStyle}>
                                                 {allVerified(applicant.id) ? (
@@ -212,7 +211,7 @@ const ApplicantManagement: React.FC = () => {
                                         {/* Document Checklist Expand */}
                                         {isExpanded && (
                                             <tr>
-                                                <td colSpan={8} style={{ padding: '0', backgroundColor: '#fafcfe' }}>
+                                                <td colSpan={7} style={{ padding: '0', backgroundColor: '#fafcfe' }}>
                                                     <div style={{ padding: '1.25rem 1.5rem', animation: 'fadeInUp 0.25s ease-out' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                                             <h4 style={{ fontSize: '0.9rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -222,6 +221,36 @@ const ApplicantManagement: React.FC = () => {
                                                                 Phone: {applicant.phone} | DOB: {applicant.dob} | Gender: {applicant.gender}
                                                             </div>
                                                         </div>
+                                                        {/* Application Status Toggle */}
+                                                        {(() => {
+                                                            const appDoc = applicant.documents.find(d => d.name === 'APPLICATION');
+                                                            const status: DocStatus = appDoc?.status || 'PENDING';
+                                                            const statuses: DocStatus[] = ['PENDING', 'SUBMITTED', 'VERIFIED'];
+                                                            return (
+                                                                <div style={{ marginBottom: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Application Status:</span>
+                                                                    {statuses.map(s => (
+                                                                        <button
+                                                                            key={s}
+                                                                            onClick={() => updateDocumentStatus(applicant.id, 'APPLICATION', s)}
+                                                                            style={{
+                                                                                padding: '0.45rem 0.8rem',
+                                                                                borderRadius: 'var(--radius-sm)',
+                                                                                border: s === status ? '1px solid var(--primary)' : '1px solid var(--border-color)',
+                                                                                backgroundColor: s === status ? 'rgba(40, 167, 69, 0.12)' : 'white',
+                                                                                color: s === status ? 'var(--primary)' : 'var(--text-muted)',
+                                                                                fontWeight: 600,
+                                                                                fontSize: '0.82rem',
+                                                                                cursor: 'pointer',
+                                                                            }}
+                                                                        >
+                                                                            {s.charAt(0) + s.slice(1).toLowerCase()}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            );
+                                                        })()}
+
                                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
                                                             {applicant.documents.map(doc => (
                                                                 <div
@@ -234,10 +263,10 @@ const ApplicantManagement: React.FC = () => {
                                                                         borderRadius: 'var(--radius-sm)',
                                                                         border: '1px solid var(--border-color)',
                                                                         backgroundColor: 'white',
-                                                                        cursor: doc.status !== 'Verified' ? 'pointer' : 'default',
+                                                                        cursor: doc.status !== 'VERIFIED' ? 'pointer' : 'default',
                                                                     }}
                                                                     onClick={() => {
-                                                                        if (doc.status !== 'Verified') {
+                                                                        if (doc.status !== 'VERIFIED') {
                                                                             updateDocumentStatus(applicant.id, doc.name, nextDocStatus(doc.status));
                                                                         }
                                                                     }}
@@ -313,18 +342,6 @@ const ApplicantManagement: React.FC = () => {
                             </div>
                             <div><label style={labelStyle}>Qualifying Exam</label><input style={inputStyle} placeholder="e.g. KCET 2026" value={form.qualifyingExam} onChange={e => setForm({ ...form, qualifyingExam: e.target.value })} /></div>
                             <div><label style={labelStyle}>Marks (%)</label><input style={inputStyle} type="number" placeholder="e.g. 85" value={form.marks || ''} onChange={e => setForm({ ...form, marks: parseInt(e.target.value) || 0 })} /></div>
-                            <div><label style={labelStyle}>Allotment Number</label><input style={inputStyle} placeholder="Government allotment #" value={form.allotmentNumber} onChange={e => setForm({ ...form, allotmentNumber: e.target.value })} /></div>
-                            <div><label style={labelStyle}>Program *</label>
-                                <select style={inputStyle} value={form.programId} onChange={e => setForm({ ...form, programId: e.target.value })}>
-                                    <option value="">Select Program</option>
-                                    {programs.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                                </select>
-                            </div>
-                            <div><label style={labelStyle}>Admission Mode</label>
-                                <select style={inputStyle} value={form.admissionMode} onChange={e => setForm({ ...form, admissionMode: e.target.value as AdmissionMode })}>
-                                    <option value="Government">Government</option><option value="Management">Management</option>
-                                </select>
-                            </div>
                         </div>
 
                         <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>

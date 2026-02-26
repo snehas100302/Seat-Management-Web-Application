@@ -13,8 +13,8 @@ const Dashboard: React.FC = () => {
     const totalAllocated = applicants.filter(a => a.allocatedProgramId).length;
     const totalConfirmed = applicants.filter(a => a.admissionNumber).length;
     const totalRemaining = totalIntake - totalAllocated;
-    const feePending = applicants.filter(a => a.allocatedProgramId && a.feeStatus === 'Pending');
-    const docsPending = applicants.filter(a => a.documents.some(d => d.status !== 'Verified'));
+    const feePending = applicants.filter(a => a.allocatedProgramId && a.feeStatus === 'PENDING');
+    const docsPending = applicants.filter(a => a.documents.some(d => d.status !== 'VERIFIED'));
 
     const stats = [
         { label: 'Total Intake', value: totalIntake, icon: TrendingUp, color: '#3b82f6', bg: '#eff6ff' },
@@ -95,12 +95,12 @@ const Dashboard: React.FC = () => {
                         <PieChart size={17} color="var(--primary)" /> Quota-wise Seat Status
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {(['KCET', 'COMEDK', 'Management'] as const).map(quotaName => {
+                        {(['KCET', 'COMEDK', 'MANAGEMENT'] as const).map(quotaName => {
                             const qList = quotas.filter(q => q.name === quotaName);
                             const total = qList.reduce((s, q) => s + q.totalSeats, 0);
                             const filled = qList.reduce((s, q) => s + q.filledSeats, 0);
                             const percent = total > 0 ? (filled / total) * 100 : 0;
-                            const colors: Record<string, string> = { 'KCET': '#3b82f6', 'COMEDK': '#8b5cf6', 'Management': '#f59e0b' };
+                            const colors: Record<string, string> = { 'KCET': '#3b82f6', 'COMEDK': '#8b5cf6', 'MANAGEMENT': '#f59e0b' };
                             return (
                                 <div key={quotaName}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
@@ -161,7 +161,7 @@ const Dashboard: React.FC = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                         {docsPending.length > 0 ? (
                             docsPending.slice(0, 8).map(a => {
-                                const pendingCount = a.documents.filter(d => d.status !== 'Verified').length;
+                                const pendingCount = a.documents.filter(d => d.status !== 'VERIFIED').length;
                                 return (
                                     <div key={a.id} style={{
                                         display: 'flex', alignItems: 'center', gap: '0.6rem',
