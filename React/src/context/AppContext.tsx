@@ -7,7 +7,7 @@ import { useAuth } from './AuthContext';
 export type CourseType = 'UG' | 'PG';
 export type EntryType = 'REGULAR' | 'LATERAL';
 export type AdmissionMode = 'GOVERNMENT' | 'MANAGEMENT';
-export type QuotaName = 'KCET' | 'COMEDK' | 'MANAGEMENT';
+export type QuotaName = 'KCET' | 'COMEDK' | 'MANAGEMENT' | 'JK' | 'SUPERNUMERARY';
 export type DocStatus = 'PENDING' | 'SUBMITTED' | 'VERIFIED';
 export type FeeStatus = 'PENDING' | 'PAID';
 export type Category = 'GM' | 'SC' | 'ST' | 'OBC' | 'EWS';
@@ -111,7 +111,7 @@ interface AppContextType {
     addApplicant: (data: any) => Promise<void>;
     updateDocumentStatus: (applicantId: number, docName: string, status: DocStatus) => Promise<void>;
 
-    allocateSeat: (applicantId: number, programId: number, quotaType: string) => Promise<{ success: boolean; message: string }>;
+    allocateSeat: (applicantId: number, programId: number, quotaType: string, allotmentNumber?: string) => Promise<{ success: boolean; message: string }>;
     markFeePaid: (applicantId: number) => Promise<void>;
     confirmAdmission: (applicantId: number) => Promise<{ success: boolean; message: string }>;
 
@@ -370,12 +370,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     // ── Seat Allocation ──
 
-    const allocateSeat = async (applicantId: number, programId: number, quotaType: string): Promise<{ success: boolean; message: string }> => {
+    const allocateSeat = async (applicantId: number, programId: number, quotaType: string, allotmentNumber?: string): Promise<{ success: boolean; message: string }> => {
         const req = {
             applicantId,
             programId,
             quotaType: quotaType.toUpperCase(),
-            allotmentNumber: applicants.find(a => a.id === applicantId)?.allotmentNumber || 'MANUAL'
+            allotmentNumber: allotmentNumber || applicants.find(a => a.id === applicantId)?.allotmentNumber || 'MANUAL'
         };
         const res = await api.post('/api/admissions/allocate', req);
         if (res.code === 201) {

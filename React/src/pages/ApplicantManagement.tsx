@@ -337,7 +337,11 @@ const ApplicantManagement: React.FC = () => {
                             </div>
                             <div><label style={labelStyle}>Quota Type</label>
                                 <select style={inputStyle} value={form.quotaType} onChange={e => setForm({ ...form, quotaType: e.target.value as QuotaName })}>
-                                    <option value="KCET">KCET</option><option value="COMEDK">COMEDK</option><option value="Management">Management</option>
+                                    <option value="KCET">KCET</option>
+                                    <option value="COMEDK">COMEDK</option>
+                                    <option value="MANAGEMENT">Management</option>
+                                    <option value="JK">J&amp;K</option>
+                                    <option value="SUPERNUMERARY">Supernumerary</option>
                                 </select>
                             </div>
                             <div><label style={labelStyle}>Qualifying Exam</label><input style={inputStyle} placeholder="e.g. KCET 2026" value={form.qualifyingExam} onChange={e => setForm({ ...form, qualifyingExam: e.target.value })} /></div>

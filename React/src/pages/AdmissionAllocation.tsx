@@ -7,6 +7,7 @@ const AdmissionAllocation: React.FC = () => {
     const [selectedApplicantId, setSelectedApplicantId] = useState<number | ''>('');
     const [selectedProgramId, setSelectedProgramId] = useState<number | ''>('');
     const [selectedQuotaId, setSelectedQuotaId] = useState<number | ''>('');
+    const [allotmentNumber, setAllotmentNumber] = useState<string>('');
     const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
     const [mode, setMode] = useState<'government' | 'management'>('government');
 
@@ -14,6 +15,9 @@ const AdmissionAllocation: React.FC = () => {
     const selectedApplicant = applicants.find(a => a.id === selectedApplicantId);
     const selectedProgram = programs.find(p => p.id === selectedProgramId);
     const programQuotas = quotas.filter(q => q.programId === selectedProgramId);
+
+    const applicationStatus = selectedApplicant?.documents.find(d => d.name === 'APPLICATION')?.status || 'PENDING';
+    const isApplicantPending = applicationStatus !== 'VERIFIED';
 
     const getHierarchyLabel = (programId: number) => {
         const prog = programs.find(p => p.id === programId);
@@ -28,12 +32,13 @@ const AdmissionAllocation: React.FC = () => {
     const handleAllocate = async () => {
         if (!selectedApplicantId || !selectedProgramId || !selectedQuotaId) return;
         const qName = quotas.find(q => q.id === selectedQuotaId)?.name || '';
-        const res = await allocateSeat(selectedApplicantId, selectedProgramId, qName);
+        const res = await allocateSeat(selectedApplicantId, selectedProgramId, qName, allotmentNumber || undefined);
         setResult(res);
         if (res.success) {
             setSelectedApplicantId('');
             setSelectedProgramId('');
             setSelectedQuotaId('');
+            setAllotmentNumber('');
         }
     };
 
@@ -163,6 +168,26 @@ const AdmissionAllocation: React.FC = () => {
                             </div>
                         )}
 
+                        {mode === 'government' && selectedApplicant && (
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>Allotment Number</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <span style={{ padding: '0.65rem 0.8rem', background: '#f8fafc', border: '1px solid var(--border-color)', borderRadius: '8px', fontWeight: 700 }}>
+                                        {selectedApplicant.quotaType === 'COMEDK' ? 'CMKD' : 'KCET'}-
+                                    </span>
+                                    <input
+                                        style={{ ...inputStyle, marginBottom: 0 }}
+                                        placeholder="Enter allotment number"
+                                        value={allotmentNumber}
+                                        onChange={e => setAllotmentNumber(e.target.value)}
+                                    />
+                                </div>
+                                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                                    Prefix is based on applicant quota type.
+                                </div>
+                            </div>
+                        )}
+
                         {selectedProgram && programQuotas.length === 0 && (
                             <div style={{ marginBottom: '0.75rem', padding: '0.65rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', color: '#1f2937', fontSize: '0.82rem' }}>
                                 No quotas configured for this program. Set KCET/COMEDK/Management seats in Seat Matrix, then return to allocate.
@@ -218,6 +243,27 @@ const AdmissionAllocation: React.FC = () => {
                             );
                             return null;
                         })()}
+
+                        {selectedApplicant && isApplicantPending && (
+                            <div style={{
+                                marginTop: '1rem',
+                                padding: '0.9rem 1rem',
+                                borderRadius: 'var(--radius-md)',
+                                backgroundColor: '#fff7ed',
+                                border: '1px solid #fed7aa',
+                                color: '#9a3412',
+                                fontSize: '0.88rem',
+                                display: 'flex',
+                                gap: '0.6rem',
+                                alignItems: 'flex-start'
+                            }}>
+                                <AlertTriangle size={18} />
+                                <div>
+                                    <strong>The applicant status is still pending.</strong><br />
+                                    Complete verification first to proceed with seat allocation.
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Step 3: Allocate */}
@@ -228,16 +274,16 @@ const AdmissionAllocation: React.FC = () => {
                         </div>
                         <button
                             onClick={handleAllocate}
-                            disabled={!selectedApplicantId || !selectedProgramId || !selectedQuotaId}
+                            disabled={!selectedApplicantId || !selectedProgramId || !selectedQuotaId || isApplicantPending}
                             style={{
                                 width: '100%', padding: '0.85rem',
-                                backgroundColor: (selectedApplicantId && selectedProgramId && selectedQuotaId) ? 'var(--primary)' : '#e5e7eb',
-                                color: (selectedApplicantId && selectedProgramId && selectedQuotaId) ? 'white' : 'var(--text-muted)',
+                                backgroundColor: (selectedApplicantId && selectedProgramId && selectedQuotaId && !isApplicantPending) ? 'var(--primary)' : '#e5e7eb',
+                                color: (selectedApplicantId && selectedProgramId && selectedQuotaId && !isApplicantPending) ? 'white' : 'var(--text-muted)',
                                 borderRadius: 'var(--radius-md)',
                                 fontWeight: 700, fontSize: '0.9rem',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                                cursor: (selectedApplicantId && selectedProgramId && selectedQuotaId) ? 'pointer' : 'not-allowed',
-                                boxShadow: (selectedApplicantId && selectedProgramId && selectedQuotaId) ? '0 4px 14px rgba(40, 167, 69, 0.3)' : 'none',
+                                cursor: (selectedApplicantId && selectedProgramId && selectedQuotaId && !isApplicantPending) ? 'pointer' : 'not-allowed',
+                                boxShadow: (selectedApplicantId && selectedProgramId && selectedQuotaId && !isApplicantPending) ? '0 4px 14px rgba(40, 167, 69, 0.3)' : 'none',
                             }}
                         >
                             <CheckCircle size={18} /> Allocate Seat

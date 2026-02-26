@@ -2,12 +2,14 @@ import React, { useState, useMemo } from 'react';
 import { Grid3X3, Save, ChevronDown, ChevronRight, Building2, MapPin, BookOpen, AlertCircle } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
-const QUOTA_NAMES: ('KCET' | 'COMEDK' | 'MANAGEMENT')[] = ['KCET', 'COMEDK', 'MANAGEMENT'];
+const QUOTA_NAMES: ('KCET' | 'COMEDK' | 'MANAGEMENT' | 'JK' | 'SUPERNUMERARY')[] = ['KCET', 'COMEDK', 'MANAGEMENT', 'JK', 'SUPERNUMERARY'];
 
 const QUOTA_COLORS: Record<string, { bg: string; text: string; border: string }> = {
     KCET:       { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
     COMEDK:     { bg: '#f0fdf4', text: '#15803d', border: '#bbf7d0' },
     MANAGEMENT: { bg: '#fdf4ff', text: '#7e22ce', border: '#e9d5ff' },
+    JK:         { bg: '#fff7ed', text: '#c2410c', border: '#fed7aa' },
+    SUPERNUMERARY: { bg: '#f5f3ff', text: '#6d28d9', border: '#ddd6fe' },
 };
 
 const SeatMatrix: React.FC = () => {
