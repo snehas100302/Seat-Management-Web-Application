@@ -15,24 +15,26 @@ import java.net.UnknownHostException;
  * 
  * Supports multiple environments:
  * - Development: http://localhost:8080/assets/ (local file serving)
- * - Production: https://api.delihurry.com/assets/ (custom domain)
- * - AWS S3: https://s3.amazonaws.com/delihurry-assets/ (cloud storage)
+ * - Production: https://api.seatcms.com/assets/ (custom domain)
+ * - AWS S3: https://s3.amazonaws.com/seatcms-assets/ (cloud storage)
  * 
  * The port is read from:
- * 1. Spring Boot server.port property (from environment, YAML, or command-line args)
+ * 1. Spring Boot server.port property (from environment, YAML, or command-line
+ * args)
  * 2. Falls back to 8080 if not configured
  * 
  * Configuration in application.yml:
  * server:
- *   port: 8085
+ * port: 8085
  * app:
- *   assets:
- *     strategy: DYNAMIC        # DYNAMIC, STATIC, S3, CDN
- *     base-url:               # (optional override)
- *     context-path: /assets/  # Base path for static resources
+ * assets:
+ * strategy: DYNAMIC # DYNAMIC, STATIC, S3, CDN
+ * base-url: # (optional override)
+ * context-path: /assets/ # Base path for static resources
  * 
  * The strategy determines how asset URLs are built:
- * - DYNAMIC: Uses server's IP/hostname and port (http://192.168.1.100:8080/assets/)
+ * - DYNAMIC: Uses server's IP/hostname and port
+ * (http://192.168.1.100:8080/assets/)
  * - STATIC: Uses fixed URL from base-url property
  * - S3: Uses AWS S3 bucket URL
  * - CDN: Uses CDN URL from base-url property
@@ -59,9 +61,9 @@ public class AssetsConfiguration {
     /**
      * Base URL override (used when strategy is STATIC, S3, or CDN)
      * Examples:
-     * - https://api.delihurry.com/assets/
-     * - https://s3.amazonaws.com/delihurry-assets/
-     * - https://cdn.delihurry.com/assets/
+     * - https://api.seatcms.com/assets/
+     * - https://s3.amazonaws.com/seatcms-assets/
+     * - https://cdn.seatcms.com/assets/
      */
     private String baseUrl;
 
@@ -118,7 +120,7 @@ public class AssetsConfiguration {
      *
      * Examples:
      * - http://192.168.1.100:8080/assets/
-     * - https://api.delihurry.com:8080/assets/
+     * - https://api.seatcms.com:8080/assets/
      * - http://localhost:8080/assets/
      *
      * @return Dynamic URL with protocol, host, port, and context path

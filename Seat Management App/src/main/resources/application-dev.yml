@@ -58,9 +58,9 @@ jwt:
 logging:
   level:
     root: info
-    com.delihurry.delihurry_api_modulith: debug
+    com.seatcms.seatcms_api_modulith: debug
     org.springframework.security: debug
-    com.delihurry.delihurry_api_modulith.partner.service.scheduler: DEBUG
+    com.seatcms.seatcms_api_modulith.partner.service.scheduler: DEBUG
 
 
 # ============================================================================

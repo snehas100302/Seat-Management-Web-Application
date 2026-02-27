@@ -25,56 +25,55 @@ import java.util.List;
 @Configuration
 public class OpenAPIConfiguration {
 
-    @Bean
-    OpenAPI defineOpenApi() {
-        Server devServer = new Server();
-        devServer.setUrl("http://localhost:8085");
-        devServer.setDescription("Seat Management API - Development");
+        @Bean
+        OpenAPI defineOpenApi() {
+                Server devServer = new Server();
+                devServer.setUrl("http://localhost:8085");
+                devServer.setDescription("Seat Management API - Development");
 
-        Server prodServer = new Server();
-        prodServer.setUrl("https://api.delihurry.com");
-        prodServer.setDescription("Seat Management API - Production");
+                Server prodServer = new Server();
+                prodServer.setUrl("https://api.seatcms.com");
+                prodServer.setDescription("Seat Management API - Production");
 
-        Contact contact = new Contact();
-        contact.setName("Pushkar D");
-        contact.setEmail("snehaaa1003@gmail.com");
+                Contact contact = new Contact();
+                contact.setName("Sneha A S");
+                contact.setEmail("snehaaa1003@gmail.com");
 
-        License license = new License()
-                .name("Apache 2.0")
-                .url("http://www.apache.org/licenses/LICENSE-2.0.html");
+                License license = new License()
+                                .name("Apache 2.0")
+                                .url("http://www.apache.org/licenses/LICENSE-2.0.html");
 
-        Info info = new Info()
-                .title("Seat Management API")
-                .version("1.0")
-                .description("This API document exposes endpoints to the services provided by the Seat Management Spring Boot App.")
-                .contact(contact)
-                .license(license);
+                Info info = new Info()
+                                .title("Seat Management API")
+                                .version("1.0")
+                                .description("This API document exposes endpoints to the services provided by the Seat Management Spring Boot App.")
+                                .contact(contact)
+                                .license(license);
 
-        ExternalDocumentation externalDocs = new ExternalDocumentation()
-                .description("Seat Management Web App")
-                .url("");
+                ExternalDocumentation externalDocs = new ExternalDocumentation()
+                                .description("Seat Management Web App")
+                                .url("");
 
-        // Security scheme for JWT
-        SecurityScheme securityScheme = new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("JWT")
-                .description("JWT Authentication");
+                // Security scheme for JWT
+                SecurityScheme securityScheme = new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                                .description("JWT Authentication");
 
-        Components components = new Components()
-                .addSecuritySchemes("bearerAuth", securityScheme);
+                Components components = new Components()
+                                .addSecuritySchemes("bearerAuth", securityScheme);
 
-        SecurityRequirement securityRequirement = new SecurityRequirement()
-                .addList("bearerAuth");
+                SecurityRequirement securityRequirement = new SecurityRequirement()
+                                .addList("bearerAuth");
 
-        // Tags for API grouping
+                // Tags for API grouping
 
-        return new OpenAPI()
-                .info(info)
-                .servers(List.of(devServer, prodServer))
-                .externalDocs(externalDocs)
-                .components(components)
-                .addSecurityItem(securityRequirement);
-    }
+                return new OpenAPI()
+                                .info(info)
+                                .servers(List.of(devServer, prodServer))
+                                .externalDocs(externalDocs)
+                                .components(components)
+                                .addSecurityItem(securityRequirement);
+        }
 }
-

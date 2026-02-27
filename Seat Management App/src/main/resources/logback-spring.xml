@@ -62,13 +62,13 @@
     <!-- You can add more appenders here (e.g., partner-specific logs) -->
 
     <!-- Example: logger for partner scheduler set to DEBUG (can be controlled in application-*.yml via logging.level) -->
-    <logger name="com.delihurry.delihurry_api_modulith.partner.service.scheduler" level="DEBUG" additivity="false">
+    <logger name="com.seatcms.seatcms_api_modulith.partner.service.scheduler" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
 
     <!-- Mail logger example: map any package that logs mail events to MAIL_FILE -->
-    <logger name="com.delihurry.delihurry_api_modulith.mail" level="INFO" additivity="false">
+    <logger name="com.seatcms.seatcms_api_modulith.mail" level="INFO" additivity="false">
         <appender-ref ref="MAIL_FILE"/>
         <appender-ref ref="CONSOLE"/>
     </logger>
